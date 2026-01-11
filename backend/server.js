@@ -443,8 +443,8 @@ const handleEvent = async (event) => {
         const headerColor = isExpense ? '#FF6B6B' : '#51CF66';
         const headerText = isExpense ? 'จดแล้วค่ะ 💸' : 'รับเงินแล้ว 💰';
 
-        // Build image URL from ngrok (or production URL)
-        const baseUrl = process.env.PUBLIC_URL || 'https://whitish-tanika-vernacularly.ngrok-free.dev';
+        // Build image URL from Render (production URL)
+        const baseUrl = process.env.PUBLIC_URL || 'https://expense-tracker-api-wxyb.onrender.com';
         const heroImageUrl = isExpense
             ? `${baseUrl}/public/images/expense_header.png`
             : `${baseUrl}/public/images/income_header.png`;
