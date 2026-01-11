@@ -4,13 +4,14 @@ import os
 brain_dir = r'C:/Users/Admin/.gemini/antigravity/brain/a3a435fd-53e4-457f-90b1-f37df4662d93'
 output_dir = r'c:/Users/Admin/.gemini/antigravity/scratch/expense-tracker/backend/public/images'
 
-input_path = os.path.join(brain_dir, 'summary_full_1768129390866.png')
+input_path = os.path.join(brain_dir, 'summary_final_1768130588694.png')
 output_path = os.path.join(output_dir, 'summary_header.png')
 
 img = Image.open(input_path)
 print(f'Original: {img.size}')
 
-# Crop to remove surrounding background (center crop to 20:13 ratio)
+# The image is 1024x1024, crop to 20:13 aspect ratio (content area)
+# Remove surrounding background by cropping tighter
 target_ratio = 20 / 13
 current_ratio = img.width / img.height
 
@@ -20,7 +21,7 @@ if current_ratio > target_ratio:
     left = (img.width - new_width) // 2
     img = img.crop((left, 0, left + new_width, img.height))
 else:
-    # Too tall, crop height
+    # Too tall, crop height  
     new_height = int(img.width / target_ratio)
     top = (img.height - new_height) // 2
     img = img.crop((0, top, img.width, top + new_height))
