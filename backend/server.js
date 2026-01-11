@@ -28,14 +28,24 @@ const client = new line.Client(lineConfig);
 // Rich Menu Switching Functions
 // ===========================================
 import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Get directory of current file for correct path resolution
+const currentFileDir = path.dirname(fileURLToPath(import.meta.url));
 
 // Load Rich Menu IDs from saved file
 const loadRichMenuIds = () => {
     try {
-        const filePath = './richMenuIds.json';
+        const filePath = path.join(currentFileDir, 'richMenuIds.json');
+        console.log('Loading Rich Menu IDs from:', filePath);
         if (fs.existsSync(filePath)) {
             const data = fs.readFileSync(filePath, 'utf8');
-            return JSON.parse(data);
+            const menuIds = JSON.parse(data);
+            console.log('Rich Menu IDs loaded:', menuIds);
+            return menuIds;
+        } else {
+            console.log('richMenuIds.json not found at:', filePath);
         }
     } catch (error) {
         console.error('Error loading Rich Menu IDs:', error);
