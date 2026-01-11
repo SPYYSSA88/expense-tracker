@@ -799,7 +799,7 @@ const ChatSimulator = ({ user }) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-line-userid': user?.lineUserId || 'demo_user'
+                    'x-line-user-id': user?.lineUserId || 'demo_user'
                 },
                 body: JSON.stringify({ message: input })
             });
@@ -1260,14 +1260,14 @@ export default function App() {
                         const profile = await liff.getProfile();
                         setUser(profile);
                         setLineUserId(profile.userId);
-                        api.defaults.headers.common['x-line-userid'] = profile.userId;
+                        api.defaults.headers.common['x-line-user-id'] = profile.userId;
                         setIsLoggedIn(true);
                     }
                 } else {
                     // Dev mode
                     const devUserId = 'dev_user_001';
                     setLineUserId(devUserId);
-                    api.defaults.headers.common['x-line-userid'] = devUserId;
+                    api.defaults.headers.common['x-line-user-id'] = devUserId;
                     setUser({ displayName: 'Dev User', pictureUrl: null });
                     setIsLoggedIn(true);
                 }
@@ -1276,7 +1276,7 @@ export default function App() {
                 // Fallback to dev mode
                 const devUserId = 'dev_user_001';
                 setLineUserId(devUserId);
-                api.defaults.headers.common['x-line-userid'] = devUserId;
+                api.defaults.headers.common['x-line-user-id'] = devUserId;
                 setUser({ displayName: 'Dev User', pictureUrl: null });
                 setIsLoggedIn(true);
             } finally {
