@@ -118,12 +118,8 @@ app.use(express.json());
 // Serve static files from 'public' folder (for images)
 app.use('/public', express.static('public'));
 
-// Serve frontend (for LIFF)
-import path from 'path';
-import { fileURLToPath } from 'url';
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-app.use(express.static(path.join(__dirname, 'dist')));
+// Serve frontend (for LIFF) - uses path/dirname from Rich Menu section above
+app.use(express.static(path.join(currentFileDir, 'dist')));
 
 // ===========================================
 // Database Connection
