@@ -383,51 +383,95 @@ export const RecurringTransaction = model('RecurringTransaction', recurringTrans
 export const DailyJournal = model('DailyJournal', dailyJournalSchema);
 
 // ===========================================
-// Default Categories - หมวดหมู่เริ่มต้น Gen Z ไทย 2569
+// Default Categories - หมวดหมู่ละเอียดสำหรับคนไทยยุคปัจจุบัน
 // ===========================================
 export const defaultCategories = {
   expense: [
-    // อาหาร & เครื่องดื่ม
+    // 1. รายจ่ายคงที่ / จำเป็นพื้นฐาน (Fixed Expenses)
+    { name: 'ค่าเช่าหอ/คอนโด', icon: '🏠', color: '#4A90D9' },
+    { name: 'ค่าผ่อนบ้าน', icon: '🏡', color: '#5B8C5A' },
+    { name: 'ค่าน้ำ', icon: '💧', color: '#00BFFF' },
+    { name: 'ค่าไฟ', icon: '💡', color: '#FFB800' },
+    { name: 'ค่ามือถือ', icon: '📱', color: '#007AFF' },
+    { name: 'ค่าเน็ตบ้าน', icon: '📶', color: '#00C7BE' },
+    { name: 'ค่ารถไฟฟ้า', icon: '🚇', color: '#7B68EE' },
+    { name: 'ค่าน้ำมัน', icon: '⛽', color: '#FF6347' },
+    { name: 'ค่าทางด่วน', icon: '🛣️', color: '#696969' },
+    { name: 'ค่าผ่อนรถ', icon: '🚗', color: '#2E8B57' },
+    { name: 'ค่าประกันรถ', icon: '🚙', color: '#4682B4' },
+
+    // 2. รายจ่ายค่าอาหารและเครื่องดื่ม (Food & Beverage)
     { name: 'อาหาร', icon: '🍜', color: '#FF6B35' },
-    { name: 'ชานม/กาแฟ', icon: '🧋', color: '#8B4513' },
+    { name: 'กาแฟ/ชานม', icon: '☕', color: '#8B4513' },
+    { name: 'บุฟเฟต์/ชาบู', icon: '🍲', color: '#FF4500' },
+    { name: 'หมูกระทะ', icon: '🥓', color: '#CD853F' },
+    { name: 'ขนม/ของกินเล่น', icon: '🍿', color: '#FFD700' },
+    { name: 'เครื่องดื่ม/แอลกอฮอล์', icon: '🍺', color: '#DAA520' },
     { name: 'เดลิเวอรี่', icon: '🛵', color: '#00D4AA' },
 
-    // ไลฟ์สไตล์
-    { name: 'ช้อปปิ้ง', icon: '🛍️', color: '#FF3366' },
-    { name: 'ของออนไลน์', icon: '📦', color: '#FF9500' },
-    { name: 'Skincare', icon: '💄', color: '#FFB6C1' },
+    // 3. รายจ่ายเพื่อภาพลักษณ์และสุขภาพ (Self-Care)
+    { name: 'สกินแคร์/เครื่องสำอาง', icon: '💄', color: '#FFB6C1' },
+    { name: 'ทำเล็บ/ต่อขนตา', icon: '💅', color: '#FF69B4' },
+    { name: 'คลินิกความงาม', icon: '✨', color: '#DDA0DD' },
+    { name: 'เสื้อผ้า/รองเท้า', icon: '👗', color: '#FF3366' },
+    { name: 'กระเป๋า/แอคเซสซอรี่', icon: '👜', color: '#C71585' },
+    { name: 'ค่าฟิตเนส/ยิม', icon: '🏋️', color: '#32CD32' },
+    { name: 'อาหารเสริม/วิตามิน', icon: '💊', color: '#00CED1' },
+    { name: 'ทำผม', icon: '💇', color: '#9370DB' },
+    { name: 'ดูดวง/ไพ่ยิปซี', icon: '🔮', color: '#8A2BE2' },
 
-    // บันเทิง
-    { name: 'บันเทิง', icon: '🎬', color: '#9B5DE5' },
-    { name: 'เกม', icon: '🎮', color: '#00FF88' },
-    { name: 'สตรีมมิ่ง', icon: '📺', color: '#E50914' },
-    { name: 'คอนเสิร์ต', icon: '🎤', color: '#FF1493' },
+    // 4. รายจ่ายด้านความบันเทิงและไลฟ์สไตล์ (Entertainment)
+    { name: 'Subscription', icon: '📺', color: '#E50914' },
+    { name: 'เติมเกม/กาชา', icon: '🎮', color: '#00FF88' },
+    { name: 'บัตรคอนเสิร์ต', icon: '🎤', color: '#FF1493' },
+    { name: 'ดูหนัง', icon: '🎬', color: '#9B5DE5' },
+    { name: 'Gadget/อุปกรณ์', icon: '🖥️', color: '#4169E1' },
+    { name: 'ผ่อน iPhone', icon: '📱', color: '#A9A9A9' },
 
-    // การเดินทาง
-    { name: 'เดินทาง', icon: '🚗', color: '#00BFFF' },
+    // 5. ภาระหนี้สินและการออม (Debt & Saving)
+    { name: 'กยศ.', icon: '🎓', color: '#1E90FF' },
+    { name: 'บัตรเครดิต', icon: '💳', color: '#FF8C00' },
+    { name: 'ShopeePay Later', icon: '🛒', color: '#EE4D2D' },
+    { name: 'เงินออม', icon: '🏦', color: '#228B22' },
+    { name: 'ประกันชีวิต', icon: '🛡️', color: '#4682B4' },
+    { name: 'ประกันสุขภาพ', icon: '❤️', color: '#DC143C' },
+
+    // 6. ภาษีสังคมและอื่นๆ (Social & Giving)
+    { name: 'ให้เงินพ่อแม่', icon: '👨‍👩‍👧', color: '#FF6B6B' },
+    { name: 'งานแต่ง/งานบวช', icon: '💒', color: '#FFD700' },
+    { name: 'ของขวัญ', icon: '🎁', color: '#FF69B4' },
+    { name: 'ทำบุญ/บริจาค', icon: '🙏', color: '#FFA500' },
+    { name: 'ค่าแมว/หมา', icon: '🐱', color: '#DEB887' },
     { name: 'Grab/Bolt', icon: '🚕', color: '#00D46A' },
-
-    // ค่าใช้จ่ายประจำ
-    { name: 'ค่าเน็ต/โทร', icon: '📱', color: '#007AFF' },
-    { name: 'ค่าบ้าน', icon: '🏠', color: '#FFEB00' },
-    { name: 'ค่าน้ำ-ไฟ', icon: '💡', color: '#FFB800' },
-
-    // อื่นๆ
-    { name: 'สุขภาพ', icon: '💊', color: '#00CED1' },
-    { name: 'การศึกษา', icon: '📚', color: '#4169E1' },
-    { name: 'สัตว์เลี้ยง', icon: '🐱', color: '#DEB887' },
-    { name: 'Merch/Idol', icon: '👕', color: '#FF69B4' },
+    { name: 'ช้อปออนไลน์', icon: '📦', color: '#FF9500' },
     { name: 'อื่นๆ', icon: '✨', color: '#888888' }
   ],
   income: [
+    // 1. รายได้จากงานประจำ (Active Income)
     { name: 'เงินเดือน', icon: '💰', color: '#00FF88' },
+    { name: 'ค่าล่วงเวลา (OT)', icon: '⏰', color: '#FFD700' },
     { name: 'โบนัส', icon: '🎁', color: '#FFEB00' },
-    { name: 'Freelance', icon: '💻', color: '#00BFFF' },
-    { name: 'ขายของ', icon: '🏪', color: '#FF3366' },
-    { name: 'ลงทุน/Crypto', icon: '₿', color: '#F7931A' },
-    { name: 'รายได้เสริม', icon: '💵', color: '#9B5DE5' },
-    { name: 'เงินพ่อแม่', icon: '👨‍👩‍👧', color: '#FF6B6B' },
-    { name: 'อื่นๆ', icon: '✨', color: '#888888' }
+    { name: 'เบี้ยขยัน', icon: '🏆', color: '#FFA500' },
+    { name: 'ค่าคอมมิชชั่น', icon: '📈', color: '#32CD32' },
+    { name: 'ค่าเดินทาง (บริษัท)', icon: '🚌', color: '#4169E1' },
+
+    // 2. รายได้จากอาชีพเสริม (Side Hustle)
+    { name: 'ฟรีแลนซ์', icon: '💻', color: '#00BFFF' },
+    { name: 'ขายของออนไลน์', icon: '🛍️', color: '#FF3366' },
+    { name: 'Affiliate', icon: '🔗', color: '#9B5DE5' },
+    { name: 'Rider (Grab/Lineman)', icon: '🛵', color: '#00D46A' },
+    { name: 'YouTube/TikTok', icon: '📹', color: '#FF0000' },
+    { name: 'ขายของมือสอง', icon: '♻️', color: '#228B22' },
+    { name: 'รับหิ้ว/พรีออเดอร์', icon: '✈️', color: '#87CEEB' },
+
+    // 3. รายได้จากการลงทุน (Passive Income)
+    { name: 'เงินปันผล', icon: '📊', color: '#4682B4' },
+    { name: 'กำไรเทรด/Crypto', icon: '₿', color: '#F7931A' },
+    { name: 'ดอกเบี้ยเงินฝาก', icon: '🏦', color: '#2E8B57' },
+    { name: 'เงินจากครอบครัว', icon: '👨‍👩‍👧', color: '#FF6B6B' },
+    { name: 'ลอตเตอรี่/รางวัล', icon: '🎰', color: '#FFD700' },
+    { name: 'Cashback', icon: '💵', color: '#00CED1' },
+    { name: 'รายได้อื่นๆ', icon: '✨', color: '#888888' }
   ]
 };
 
