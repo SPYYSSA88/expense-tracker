@@ -402,8 +402,14 @@ const handleEvent = async (event) => {
         // For category matching, clean up the text
         let cleanedName = displayName;
         const allKeywords = [...expenseKeywords, ...incomeKeywords];
+
+        // Function to escape regex special characters
+        const escapeRegExp = (string) => {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        };
+
         for (const keyword of allKeywords) {
-            cleanedName = cleanedName.replace(new RegExp(keyword, 'g'), '').trim();
+            cleanedName = cleanedName.replace(new RegExp(escapeRegExp(keyword), 'g'), '').trim();
         }
         cleanedName = cleanedName.replace(/^(ค่า|เงิน|ของ)/g, '').trim();
         let categoryName = cleanedName || 'อื่นๆ';
