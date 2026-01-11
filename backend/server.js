@@ -253,7 +253,7 @@ const handleEvent = async (event) => {
 
             // Build image URL
             const baseUrl = process.env.PUBLIC_URL || 'https://expense-tracker-api-wxyb.onrender.com';
-            const headerImage = `${baseUrl}/public/images/income_header.png`;
+            const headerImage = `${baseUrl}/public/images/summary_header.png`;
 
             // Create summary Flex Message
             const summaryFlex = {
