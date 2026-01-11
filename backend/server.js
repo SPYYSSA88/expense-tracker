@@ -392,26 +392,21 @@ const handleEvent = async (event) => {
         for (const keyword of incomeKeywords) {
             if (text.includes(keyword)) {
                 type = 'income';
-                // Remove the keyword to get item name
-                itemName = itemName.replace(new RegExp(keyword, 'g'), '').trim();
                 break;
             }
         }
 
-        // Check for expense keywords (if not already income)
-        if (type === 'expense') {
-            for (const keyword of expenseKeywords) {
-                if (text.includes(keyword)) {
-                    // Remove the keyword to get item name
-                    itemName = itemName.replace(new RegExp(keyword, 'g'), '').trim();
-                    break;
-                }
-            }
-        }
+        // Keep original text for display (don't strip keywords)
+        let displayName = textWithoutNumber.trim();
 
-        // Clean up item name
-        itemName = itemName.replace(/^(ค่า|เงิน|ของ)/g, '').trim(); // Remove common prefixes
-        let categoryName = itemName || 'อื่นๆ';
+        // For category matching, clean up the text
+        let cleanedName = displayName;
+        const allKeywords = [...expenseKeywords, ...incomeKeywords];
+        for (const keyword of allKeywords) {
+            cleanedName = cleanedName.replace(new RegExp(keyword, 'g'), '').trim();
+        }
+        cleanedName = cleanedName.replace(/^(ค่า|เงิน|ของ)/g, '').trim();
+        let categoryName = cleanedName || 'อื่นๆ';
 
         // 3. Find Category
         // Get user's categories
@@ -492,7 +487,7 @@ const handleEvent = async (event) => {
                     contents: [
                         {
                             type: 'text',
-                            text: `${isExpense ? 'จดแล้วค่ะ' : 'รับเงินแล้ว'} ${itemName || category.name}`,
+                            text: `${isExpense ? 'จดแล้วค่ะ' : 'รับเงินแล้ว'} ${displayName || category.name}`,
                             color: headerColor,
                             size: 'lg',
                             weight: 'bold',
