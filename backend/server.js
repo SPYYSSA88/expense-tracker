@@ -493,11 +493,18 @@ const handleEvent = async (event) => {
                     paddingAll: '15px'
                 },
                 hero: {
-                    type: 'image',
-                    url: heroImageUrl,
-                    size: 'full',
-                    aspectRatio: '20:10',
-                    aspectMode: 'cover'
+                    type: 'box',
+                    layout: 'vertical',
+                    contents: [
+                        {
+                            type: 'image',
+                            url: heroImageUrl,
+                            size: 'full',
+                            aspectRatio: '20:10',
+                            aspectMode: 'cover'
+                        }
+                    ],
+                    paddingAll: '0px'
                 },
                 body: {
                     type: 'box',
