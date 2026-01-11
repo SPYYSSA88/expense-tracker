@@ -455,7 +455,7 @@ const handleEvent = async (event) => {
             contents: {
                 type: 'bubble',
                 size: 'mega',
-                header: {
+                hero: {
                     type: 'box',
                     layout: 'vertical',
                     contents: [
@@ -463,32 +463,40 @@ const handleEvent = async (event) => {
                             type: 'text',
                             text: headerText,
                             color: '#FFFFFF',
-                            size: 'lg',
+                            size: 'xl',
                             weight: 'bold',
                             align: 'center'
+                        },
+                        {
+                            type: 'text',
+                            text: category.name,
+                            color: '#FFFFFF',
+                            size: 'lg',
+                            align: 'center',
+                            margin: 'sm'
                         }
                     ],
-                    backgroundColor: headerColor,
-                    paddingAll: '15px'
-                },
-                hero: {
-                    type: 'image',
-                    url: heroImageUrl,
-                    size: 'full',
-                    aspectRatio: '20:8',
-                    aspectMode: 'cover'
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    background: {
+                        type: 'linearGradient',
+                        angle: '0deg',
+                        startColor: headerColor + 'CC',
+                        endColor: headerColor + '99'
+                    },
+                    height: '120px',
+                    paddingAll: '20px'
                 },
                 body: {
                     type: 'box',
                     layout: 'vertical',
                     contents: [
                         {
-                            type: 'text',
-                            text: category.name,
-                            weight: 'bold',
-                            size: 'xl',
-                            align: 'center',
-                            margin: 'md'
+                            type: 'image',
+                            url: heroImageUrl,
+                            size: 'full',
+                            aspectRatio: '20:10',
+                            aspectMode: 'cover'
                         },
                         {
                             type: 'text',
@@ -508,7 +516,7 @@ const handleEvent = async (event) => {
                             margin: 'md'
                         }
                     ],
-                    paddingAll: '20px'
+                    paddingAll: '15px'
                 },
                 footer: {
                     type: 'box',
