@@ -19,13 +19,13 @@ const LIFF_URL = `https://liff.line.me/${LIFF_ID}`;
 
 // Menu 1: For NEW users - "เข้าสู่ระบบ" (Login)
 const loginMenuConfig = {
-    size: { width: 2500, height: 843 },
+    size: { width: 2500, height: 422 },
     selected: true,
     name: 'Login Menu (New Users)',
     chatBarText: '🔐 เข้าสู่ระบบ',
     areas: [
         {
-            bounds: { x: 0, y: 0, width: 2500, height: 843 },
+            bounds: { x: 0, y: 0, width: 2500, height: 422 },
             action: { type: 'uri', uri: LIFF_URL }
         }
     ]
@@ -33,13 +33,13 @@ const loginMenuConfig = {
 
 // Menu 2: For EXISTING users - "หน้าแรก" (Home)
 const homeMenuConfig = {
-    size: { width: 2500, height: 843 },
+    size: { width: 2500, height: 422 },
     selected: true,
     name: 'Home Menu (Existing Users)',
     chatBarText: '🏠 หน้าแรก',
     areas: [
         {
-            bounds: { x: 0, y: 0, width: 2500, height: 843 },
+            bounds: { x: 0, y: 0, width: 2500, height: 422 },
             action: { type: 'uri', uri: LIFF_URL }
         }
     ]
