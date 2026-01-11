@@ -372,12 +372,12 @@ const handleEvent = async (event) => {
             return client.replyMessage(event.replyToken, summaryFlex);
         }
 
-        // 3. Parse Text for transactions
-        // Patterns:
-        // "100" -> Expense (Category: Other)
-        // "+100" -> Income (Category: Salary/Other)
-        // "Food 100", "100 Food" -> Expense
-        // "Salary 1000", "1000 Salary" -> Income (if match income category) or Expense (if using generic logic, but usually we can check category type)
+        // 3. Parse Text for transactions with Smart Thai Language Detection
+        // Examples:
+        // "จ่ายค่าก๋วยเตี๋ยว 150" → expense, ก๋วยเตี๋ยว, -150
+        // "ซื้อกาแฟ 80" → expense, กาแฟ, -80
+        // "รับเงินเดือน 25000" → income, เงินเดือน, +25000
+        // "ได้โบนัส 5000" → income, โบนัส, +5000
 
         const numberPattern = /[\d,]+(\.\d+)?/;
         const amountMatch = text.match(numberPattern);
@@ -388,17 +388,40 @@ const handleEvent = async (event) => {
         }
 
         const rawAmount = parseFloat(amountMatch[0].replace(/,/g, ''));
-        const textWithoutNumber = text.replace(numberPattern, '').trim();
+        let textWithoutNumber = text.replace(numberPattern, '').trim();
 
-        // Default Type & Category
+        // Smart keyword detection
+        const expenseKeywords = ['จ่าย', 'ซื้อ', 'ค่า', 'กิน', 'ดื่ม', 'เสีย', 'หมด', 'เติม', 'โอน', 'จอง'];
+        const incomeKeywords = ['รับ', 'ได้', 'เงินเดือน', 'โบนัส', 'ขาย', 'หารายได้', '+'];
+
+        // Default type
         let type = 'expense';
-        let categoryName = textWithoutNumber || 'อื่นๆ';
+        let itemName = textWithoutNumber;
 
-        // Check for specific keywords
-        if (text.includes('+') || text.includes('รายรับ') || text.includes('ได้')) {
-            type = 'income';
-            categoryName = categoryName.replace(/[+]/g, '').trim() || 'รายรับอื่นๆ';
+        // Check for income keywords first
+        for (const keyword of incomeKeywords) {
+            if (text.includes(keyword)) {
+                type = 'income';
+                // Remove the keyword to get item name
+                itemName = itemName.replace(new RegExp(keyword, 'g'), '').trim();
+                break;
+            }
         }
+
+        // Check for expense keywords (if not already income)
+        if (type === 'expense') {
+            for (const keyword of expenseKeywords) {
+                if (text.includes(keyword)) {
+                    // Remove the keyword to get item name
+                    itemName = itemName.replace(new RegExp(keyword, 'g'), '').trim();
+                    break;
+                }
+            }
+        }
+
+        // Clean up item name
+        itemName = itemName.replace(/^(ค่า|เงิน|ของ)/g, '').trim(); // Remove common prefixes
+        let categoryName = itemName || 'อื่นๆ';
 
         // 3. Find Category
         // Get user's categories
@@ -472,7 +495,7 @@ const handleEvent = async (event) => {
                     contents: [
                         {
                             type: 'text',
-                            text: `${isExpense ? 'จดแล้วค่ะ' : 'รับเงินแล้ว'} ${textWithoutNumber || category.name}`,
+                            text: `${isExpense ? 'จดแล้วค่ะ' : 'รับเงินแล้ว'} ${itemName || category.name}`,
                             color: '#C9A962',
                             size: 'xl',
                             weight: 'bold',
