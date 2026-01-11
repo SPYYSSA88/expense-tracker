@@ -351,7 +351,7 @@ const handleEvent = async (event) => {
                                 action: {
                                     type: 'uri',
                                     label: '📱 ดูรายละเอียดเพิ่มเติม',
-                                    uri: `https://liff.line.me/${process.env.LIFF_ID}`
+                                    uri: `https://liff.line.me/${process.env.LIFF_ID}/reports`
                                 }
                             }
                         ]
