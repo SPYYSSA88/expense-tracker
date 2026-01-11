@@ -476,35 +476,12 @@ const handleEvent = async (event) => {
             contents: {
                 type: 'bubble',
                 size: 'mega',
-                header: {
-                    type: 'box',
-                    layout: 'vertical',
-                    contents: [
-                        {
-                            type: 'text',
-                            text: `${isExpense ? 'จดแล้วค่ะ' : 'รับเงินแล้ว'} ${itemName || category.name}`,
-                            color: '#FFFFFF',
-                            size: 'lg',
-                            weight: 'bold',
-                            align: 'center'
-                        }
-                    ],
-                    backgroundColor: headerColor,
-                    paddingAll: '15px'
-                },
                 hero: {
-                    type: 'box',
-                    layout: 'vertical',
-                    contents: [
-                        {
-                            type: 'image',
-                            url: heroImageUrl,
-                            size: 'full',
-                            aspectRatio: '20:10',
-                            aspectMode: 'cover'
-                        }
-                    ],
-                    paddingAll: '0px'
+                    type: 'image',
+                    url: heroImageUrl,
+                    size: 'full',
+                    aspectRatio: '20:13',
+                    aspectMode: 'cover'
                 },
                 body: {
                     type: 'box',
@@ -512,11 +489,24 @@ const handleEvent = async (event) => {
                     contents: [
                         {
                             type: 'text',
+                            text: `${isExpense ? 'จดแล้วค่ะ' : 'รับเงินแล้ว'} ${itemName || category.name}`,
+                            color: headerColor,
+                            size: 'lg',
+                            weight: 'bold',
+                            align: 'center'
+                        },
+                        {
+                            type: 'separator',
+                            margin: 'lg'
+                        },
+                        {
+                            type: 'text',
                             text: category.name,
                             weight: 'bold',
                             size: 'xl',
                             align: 'center',
-                            color: '#555555'
+                            color: '#555555',
+                            margin: 'lg'
                         },
                         {
                             type: 'text',
@@ -536,7 +526,8 @@ const handleEvent = async (event) => {
                             margin: 'md'
                         }
                     ],
-                    paddingAll: '20px'
+                    paddingAll: '20px',
+                    backgroundColor: '#FFFFFF'
                 },
                 footer: {
                     type: 'box',
