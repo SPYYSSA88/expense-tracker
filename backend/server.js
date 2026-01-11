@@ -262,46 +262,33 @@ const handleEvent = async (event) => {
                 contents: {
                     type: 'bubble',
                     size: 'mega',
-                    hero: {
+                    header: {
                         type: 'box',
                         layout: 'vertical',
                         contents: [
                             {
                                 type: 'text',
-                                text: `📊 สรุปเดือน ${thaiMonth}`,
+                                text: `📊 สรุปเดือน ${thaiMonth} ${thaiYear}`,
                                 weight: 'bold',
-                                size: 'xl',
-                                color: '#C9A962',
+                                size: 'lg',
+                                color: '#FFFFFF',
                                 align: 'center'
-                            },
-                            {
-                                type: 'text',
-                                text: `พ.ศ. ${thaiYear}`,
-                                size: 'md',
-                                color: '#8B7355',
-                                align: 'center',
-                                margin: 'sm'
                             }
                         ],
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        background: {
-                            type: 'image',
-                            url: headerImage,
-                            size: 'cover',
-                            aspectRatio: '20:10'
-                        },
-                        height: '150px',
-                        paddingAll: '20px'
+                        backgroundColor: '#C9A962',
+                        paddingAll: '15px'
+                    },
+                    hero: {
+                        type: 'image',
+                        url: headerImage,
+                        size: 'full',
+                        aspectRatio: '20:10',
+                        aspectMode: 'cover'
                     },
                     body: {
                         type: 'box',
                         layout: 'vertical',
                         contents: [
-                            {
-                                type: 'separator',
-                                margin: 'lg'
-                            },
                             {
                                 type: 'box',
                                 layout: 'vertical',
@@ -489,29 +476,28 @@ const handleEvent = async (event) => {
             contents: {
                 type: 'bubble',
                 size: 'mega',
-                hero: {
+                header: {
                     type: 'box',
                     layout: 'vertical',
                     contents: [
                         {
                             type: 'text',
                             text: `${isExpense ? 'จดแล้วค่ะ' : 'รับเงินแล้ว'} ${itemName || category.name}`,
-                            color: '#C9A962',
-                            size: 'xl',
+                            color: '#FFFFFF',
+                            size: 'lg',
                             weight: 'bold',
                             align: 'center'
                         }
                     ],
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    background: {
-                        type: 'image',
-                        url: heroImageUrl,
-                        size: 'cover',
-                        aspectRatio: '20:10'
-                    },
-                    height: '150px',
-                    paddingAll: '20px'
+                    backgroundColor: headerColor,
+                    paddingAll: '15px'
+                },
+                hero: {
+                    type: 'image',
+                    url: heroImageUrl,
+                    size: 'full',
+                    aspectRatio: '20:10',
+                    aspectMode: 'cover'
                 },
                 body: {
                     type: 'box',
@@ -521,7 +507,7 @@ const handleEvent = async (event) => {
                             type: 'text',
                             text: category.name,
                             weight: 'bold',
-                            size: 'lg',
+                            size: 'xl',
                             align: 'center',
                             color: '#555555'
                         },
