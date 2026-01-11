@@ -1306,29 +1306,55 @@ export default function App({ liffProfile, liff, liffError }) {
             const monthStr = getMonthString(selectedMonth);
             console.log('🔍 Fetching data for month:', monthStr, 'userId:', lineUserId);
 
-            const [txRes, catRes, reportRes] = await Promise.all([
+            // Use Promise.allSettled to handle each API independently
+            // This way if report times out, transactions can still show
+            const [txResult, catResult, reportResult] = await Promise.allSettled([
                 api.get('/transactions', { params: { month: monthStr } }),
                 api.get('/categories'),
                 api.get('/report', { params: { month: monthStr } })
             ]);
 
-            console.log('📊 Raw API responses:', {
-                transactions: txRes.data,
-                categories: catRes.data,
-                report: reportRes.data
+            console.log('📊 API Results:', {
+                transactions: txResult.status,
+                categories: catResult.status,
+                report: reportResult.status
             });
 
-            // Extract data correctly from API response structure
-            // API returns: { success: true, data: { transactions: [...], ... } }
-            const txData = txRes.data?.data?.transactions || txRes.data?.transactions || [];
-            const catData = catRes.data?.data?.categories || catRes.data?.categories || catRes.data?.data || [];
-            const reportData = reportRes.data?.data || reportRes.data || null;
+            // Extract data from successful requests only
+            let txData = [];
+            let catData = [];
+            let reportData = null;
 
-            console.log('✅ Extracted data:', {
-                transactions: txData.length,
-                categories: catData.length,
-                report: reportData?.summary
-            });
+            if (txResult.status === 'fulfilled') {
+                const txRes = txResult.value;
+                txData = txRes.data?.data?.transactions || txRes.data?.transactions || [];
+                console.log('✅ Transactions loaded:', txData.length, 'items');
+            } else {
+                console.error('❌ Transactions failed:', txResult.reason?.message);
+            }
+
+            if (catResult.status === 'fulfilled') {
+                const catRes = catResult.value;
+                catData = catRes.data?.data?.categories || catRes.data?.categories || catRes.data?.data || [];
+                console.log('✅ Categories loaded:', catData.length, 'items');
+            } else {
+                console.error('❌ Categories failed:', catResult.reason?.message);
+            }
+
+            if (reportResult.status === 'fulfilled') {
+                const reportRes = reportResult.value;
+                reportData = reportRes.data?.data || reportRes.data || null;
+                console.log('✅ Report loaded:', reportData?.summary);
+            } else {
+                console.error('⚠️ Report failed (timeout?):', reportResult.reason?.message);
+                // Calculate local summary from transactions if report fails
+                if (txData.length > 0) {
+                    const income = txData.filter(t => t.type === 'income').reduce((sum, t) => sum + (t.amount || 0), 0);
+                    const expense = txData.filter(t => t.type === 'expense').reduce((sum, t) => sum + (t.amount || 0), 0);
+                    reportData = { summary: { income, expense, balance: income - expense } };
+                    console.log('📊 Calculated local summary:', reportData.summary);
+                }
+            }
 
             setTransactions(txData);
             setCategories(catData);
