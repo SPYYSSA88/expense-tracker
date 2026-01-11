@@ -215,7 +215,153 @@ const handleEvent = async (event) => {
             console.log(`✅ Auto-registered user: ${profile.displayName}`);
         }
 
-        // 2. Parse Text
+        // 2. Check for special commands first
+        const lowerText = text.toLowerCase();
+
+        // Handle "สรุป" (Summary) command
+        if (lowerText === 'สรุป' || lowerText === 'summary') {
+            const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
+            const groupId = user.currentGroupId;
+
+            // Get transactions for current month
+            const transactions = await Transaction.find({
+                groupId,
+                monthStr: currentMonth
+            });
+
+            // Calculate totals
+            let totalIncome = 0;
+            let totalExpense = 0;
+
+            transactions.forEach(tx => {
+                if (tx.type === 'income') {
+                    totalIncome += tx.amount;
+                } else {
+                    totalExpense += tx.amount;
+                }
+            });
+
+            const balance = totalIncome - totalExpense;
+            const transactionCount = transactions.length;
+
+            // Format month name in Thai
+            const monthNames = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
+                'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+            const now = new Date();
+            const thaiMonth = monthNames[now.getMonth()];
+            const thaiYear = now.getFullYear() + 543;
+
+            // Build image URL
+            const baseUrl = process.env.PUBLIC_URL || 'https://expense-tracker-api-wxyb.onrender.com';
+            const headerImage = `${baseUrl}/public/images/income_header.png`;
+
+            // Create summary Flex Message
+            const summaryFlex = {
+                type: 'flex',
+                altText: `สรุปเดือน ${thaiMonth} ${thaiYear}`,
+                contents: {
+                    type: 'bubble',
+                    size: 'mega',
+                    hero: {
+                        type: 'image',
+                        url: headerImage,
+                        size: 'full',
+                        aspectRatio: '20:13',
+                        aspectMode: 'cover'
+                    },
+                    body: {
+                        type: 'box',
+                        layout: 'vertical',
+                        contents: [
+                            {
+                                type: 'text',
+                                text: `📊 สรุปเดือน ${thaiMonth}`,
+                                weight: 'bold',
+                                size: 'xl',
+                                color: '#1a1a1a'
+                            },
+                            {
+                                type: 'text',
+                                text: `พ.ศ. ${thaiYear}`,
+                                size: 'sm',
+                                color: '#888888',
+                                margin: 'sm'
+                            },
+                            {
+                                type: 'separator',
+                                margin: 'lg'
+                            },
+                            {
+                                type: 'box',
+                                layout: 'vertical',
+                                margin: 'lg',
+                                spacing: 'md',
+                                contents: [
+                                    {
+                                        type: 'box',
+                                        layout: 'horizontal',
+                                        contents: [
+                                            { type: 'text', text: '💰 รายรับ', size: 'md', color: '#555555', flex: 1 },
+                                            { type: 'text', text: `+฿${totalIncome.toLocaleString()}`, size: 'md', color: '#00C851', align: 'end', weight: 'bold' }
+                                        ]
+                                    },
+                                    {
+                                        type: 'box',
+                                        layout: 'horizontal',
+                                        contents: [
+                                            { type: 'text', text: '💸 รายจ่าย', size: 'md', color: '#555555', flex: 1 },
+                                            { type: 'text', text: `-฿${totalExpense.toLocaleString()}`, size: 'md', color: '#FF4444', align: 'end', weight: 'bold' }
+                                        ]
+                                    },
+                                    {
+                                        type: 'separator',
+                                        margin: 'md'
+                                    },
+                                    {
+                                        type: 'box',
+                                        layout: 'horizontal',
+                                        margin: 'md',
+                                        contents: [
+                                            { type: 'text', text: '🏦 คงเหลือ', size: 'lg', color: '#1a1a1a', flex: 1, weight: 'bold' },
+                                            { type: 'text', text: `฿${balance.toLocaleString()}`, size: 'xl', color: balance >= 0 ? '#C9A962' : '#FF4444', align: 'end', weight: 'bold' }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                type: 'box',
+                                layout: 'horizontal',
+                                margin: 'lg',
+                                contents: [
+                                    { type: 'text', text: `📝 รายการทั้งหมด: ${transactionCount} รายการ`, size: 'xs', color: '#888888' }
+                                ]
+                            }
+                        ]
+                    },
+                    footer: {
+                        type: 'box',
+                        layout: 'vertical',
+                        spacing: 'sm',
+                        contents: [
+                            {
+                                type: 'button',
+                                style: 'primary',
+                                color: '#C9A962',
+                                action: {
+                                    type: 'uri',
+                                    label: '📱 ดูรายละเอียดเพิ่มเติม',
+                                    uri: `https://liff.line.me/${process.env.LIFF_ID}`
+                                }
+                            }
+                        ]
+                    }
+                }
+            };
+
+            return client.replyMessage(event.replyToken, summaryFlex);
+        }
+
+        // 3. Parse Text for transactions
         // Patterns:
         // "100" -> Expense (Category: Other)
         // "+100" -> Income (Category: Salary/Other)
