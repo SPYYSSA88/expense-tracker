@@ -1457,20 +1457,32 @@ export default function App({ liffProfile, liff, liffError }) {
     }, [transactions, selectedDate]);
 
     // Touch handlers for Pull-to-Refresh (must be before loading check for hook order)
+    const touchStartY = useRef(0);
+
     const handleTouchStart = useCallback((e) => {
+        // Only start pull-to-refresh if we're at the very top
         if (window.scrollY === 0) {
+            touchStartY.current = e.touches[0].clientY;
             setIsPulling(true);
-            setPullDistance(0);
         }
     }, []);
 
     const handleTouchMove = useCallback((e) => {
-        if (isPulling && window.scrollY === 0) {
-            const touch = e.touches[0];
-            const distance = Math.min(touch.clientY - 100, 100);
-            if (distance > 0) {
-                setPullDistance(distance);
-            }
+        // Only track pull if we started at top AND still at top
+        if (!isPulling || window.scrollY > 0) {
+            setIsPulling(false);
+            setPullDistance(0);
+            return;
+        }
+
+        const currentY = e.touches[0].clientY;
+        const distance = currentY - touchStartY.current;
+
+        // Only show pull indicator when dragging DOWN (positive distance)
+        if (distance > 0) {
+            setPullDistance(Math.min(distance, 100));
+        } else {
+            setPullDistance(0);
         }
     }, [isPulling]);
 
