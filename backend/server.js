@@ -351,7 +351,7 @@ const handleEvent = async (event) => {
                                 action: {
                                     type: 'uri',
                                     label: '📱 ดูรายละเอียดเพิ่มเติม',
-                                    uri: `https://liff.line.me/${process.env.LIFF_ID}/reports`
+                                    uri: `https://expense-tracker-gamma-seven-80.vercel.app/?page=reports`
                                 }
                             }
                         ]
