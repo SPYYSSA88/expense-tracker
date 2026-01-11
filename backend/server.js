@@ -461,30 +461,22 @@ const handleEvent = async (event) => {
                     contents: [
                         {
                             type: 'text',
-                            text: headerText,
-                            color: '#FFFFFF',
+                            text: `${isExpense ? 'จดแล้วค่ะ' : 'รับเงินแล้ว'} ${textWithoutNumber || category.name}`,
+                            color: '#C9A962',
                             size: 'xl',
                             weight: 'bold',
                             align: 'center'
-                        },
-                        {
-                            type: 'text',
-                            text: category.name,
-                            color: '#FFFFFF',
-                            size: 'lg',
-                            align: 'center',
-                            margin: 'sm'
                         }
                     ],
                     justifyContent: 'center',
                     alignItems: 'center',
                     background: {
-                        type: 'linearGradient',
-                        angle: '0deg',
-                        startColor: headerColor + 'CC',
-                        endColor: headerColor + '99'
+                        type: 'image',
+                        url: heroImageUrl,
+                        size: 'cover',
+                        aspectRatio: '20:10'
                     },
-                    height: '120px',
+                    height: '150px',
                     paddingAll: '20px'
                 },
                 body: {
@@ -492,20 +484,21 @@ const handleEvent = async (event) => {
                     layout: 'vertical',
                     contents: [
                         {
-                            type: 'image',
-                            url: heroImageUrl,
-                            size: 'full',
-                            aspectRatio: '20:10',
-                            aspectMode: 'cover'
+                            type: 'text',
+                            text: category.name,
+                            weight: 'bold',
+                            size: 'lg',
+                            align: 'center',
+                            color: '#555555'
                         },
                         {
                             type: 'text',
-                            text: `${amountPrefix}${rawAmount.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`,
+                            text: `${amountPrefix} ${rawAmount.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`,
                             weight: 'bold',
                             size: 'xxl',
                             color: amountColor,
                             align: 'center',
-                            margin: 'lg'
+                            margin: 'md'
                         },
                         {
                             type: 'text',
@@ -516,7 +509,7 @@ const handleEvent = async (event) => {
                             margin: 'md'
                         }
                     ],
-                    paddingAll: '15px'
+                    paddingAll: '20px'
                 },
                 footer: {
                     type: 'box',
