@@ -263,13 +263,6 @@ const handleEvent = async (event) => {
                     type: 'bubble',
                     size: 'mega',
                     hero: {
-                        type: 'image',
-                        url: headerImage,
-                        size: 'full',
-                        aspectRatio: '20:13',
-                        aspectMode: 'cover'
-                    },
-                    body: {
                         type: 'box',
                         layout: 'vertical',
                         contents: [
@@ -278,15 +271,33 @@ const handleEvent = async (event) => {
                                 text: `📊 สรุปเดือน ${thaiMonth}`,
                                 weight: 'bold',
                                 size: 'xl',
-                                color: '#1a1a1a'
+                                color: '#C9A962',
+                                align: 'center'
                             },
                             {
                                 type: 'text',
                                 text: `พ.ศ. ${thaiYear}`,
-                                size: 'sm',
-                                color: '#888888',
+                                size: 'md',
+                                color: '#8B7355',
+                                align: 'center',
                                 margin: 'sm'
-                            },
+                            }
+                        ],
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        background: {
+                            type: 'image',
+                            url: headerImage,
+                            size: 'cover',
+                            aspectRatio: '20:10'
+                        },
+                        height: '150px',
+                        paddingAll: '20px'
+                    },
+                    body: {
+                        type: 'box',
+                        layout: 'vertical',
+                        contents: [
                             {
                                 type: 'separator',
                                 margin: 'lg'
