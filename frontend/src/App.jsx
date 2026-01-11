@@ -1308,9 +1308,19 @@ export default function App({ liffProfile, liff, liffError }) {
                 api.get('/categories'),
                 api.get('/report', { params: { month: getMonthString(selectedMonth) } })
             ]);
-            setTransactions(txRes.data);
-            setCategories(catRes.data);
-            setReport(reportRes.data);
+
+            // Extract data correctly from API response structure
+            // API returns: { success: true, data: { transactions: [...], ... } }
+            const txData = txRes.data?.data?.transactions || txRes.data?.transactions || [];
+            const catData = catRes.data?.data?.categories || catRes.data?.categories || catRes.data?.data || [];
+            const reportData = reportRes.data?.data || reportRes.data || null;
+
+            console.log('Fetched transactions:', txData.length, 'items');
+            console.log('Fetched categories:', catData.length, 'items');
+
+            setTransactions(txData);
+            setCategories(catData);
+            setReport(reportData);
         } catch (error) {
             console.error('Fetch error:', error);
         } finally {
