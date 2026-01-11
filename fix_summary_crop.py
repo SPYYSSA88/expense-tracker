@@ -13,30 +13,38 @@ print(f'Original: {img.size}')
 
 w, h = img.size
 
-# Crop to remove white borders - trim edges
-# Target aspect ratio: 20:13 (matching our Flex Message)
-target_ratio = 20 / 13
+# Aggressively crop to remove ALL white borders
+# Crop from all sides
+top_crop = int(h * 0.06)    # 6% from top
+bottom_crop = int(h * 0.04)  # 4% from bottom
+left_crop = int(w * 0.02)    # 2% from left
+right_crop = int(w * 0.02)   # 2% from right
 
-# Crop center portion removing white edges
-# Estimate ~5% from top/bottom for white borders
-top_crop = int(h * 0.05)
-bottom_crop = int(h * 0.02)
-
-# Calculate new dimensions
-cropped_h = h - top_crop - bottom_crop
-new_width = int(cropped_h * target_ratio)
-
-# Center crop horizontally
-left = (w - new_width) // 2
-right = left + new_width
-
-img_cropped = img.crop((left, top_crop, right, h - bottom_crop))
+img_cropped = img.crop((left_crop, top_crop, w - right_crop, h - bottom_crop))
 print(f'Cropped: {img_cropped.size}')
 
-# Convert to RGB
-if img_cropped.mode in ('RGBA', 'P'):
-    img_cropped = img_cropped.convert('RGB')
+# Now resize to exact 20:13 ratio
+target_ratio = 20 / 13
+cropped_w, cropped_h = img_cropped.size
+current_ratio = cropped_w / cropped_h
 
-img_cropped.save(output_path, 'PNG', optimize=True)
+if current_ratio > target_ratio:
+    # Too wide, trim width
+    new_w = int(cropped_h * target_ratio)
+    left = (cropped_w - new_w) // 2
+    img_final = img_cropped.crop((left, 0, left + new_w, cropped_h))
+else:
+    # Too tall, trim height
+    new_h = int(cropped_w / target_ratio)
+    top = (cropped_h - new_h) // 2
+    img_final = img_cropped.crop((0, top, cropped_w, top + new_h))
+
+print(f'Final: {img_final.size}')
+
+# Convert to RGB
+if img_final.mode in ('RGBA', 'P'):
+    img_final = img_final.convert('RGB')
+
+img_final.save(output_path, 'PNG', optimize=True)
 print(f'Saved: {output_path} ({os.path.getsize(output_path)/1024:.0f} KB)')
 print('Done!')
