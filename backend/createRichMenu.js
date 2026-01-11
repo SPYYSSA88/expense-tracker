@@ -10,7 +10,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const CHANNEL_ACCESS_TOKEN = process.env.CHANNEL_ACCESS_TOKEN;
-const LIFF_URL = 'https://liff.line.me/2008862805-LfU74yKh'; // LIFF App URL
+const LIFF_ID = process.env.LIFF_ID || '2008862805-LFu74yKh';
+const LIFF_URL = `https://liff.line.me/${LIFF_ID}`;
 
 // Rich Menu Configuration
 const richMenuObject = {
@@ -22,7 +23,7 @@ const richMenuObject = {
     name: 'Money Secrets Menu',
     chatBarText: '📊 เมนู',
     areas: [
-        // Left: รายงาน (Report) - Open LIFF App
+        // Left: หน้าหลัก (Home) - Open LIFF App with LINE Login
         {
             bounds: { x: 0, y: 0, width: 833, height: 843 },
             action: { type: 'uri', uri: LIFF_URL }
@@ -61,7 +62,7 @@ async function createRichMenu() {
 
         // Step 2: Upload Image
         console.log('📤 กำลังอัปโหลดรูปภาพ...');
-        const imagePath = path.join(__dirname, 'public', 'images', 'rich_menu.jpg');
+        const imagePath = path.join(__dirname, 'public', 'images', 'rich_menu.png');
         const imageBuffer = fs.readFileSync(imagePath);
 
         await axios.post(
@@ -69,7 +70,7 @@ async function createRichMenu() {
             imageBuffer,
             {
                 headers: {
-                    'Content-Type': 'image/jpeg',
+                    'Content-Type': 'image/png',
                     'Authorization': `Bearer ${CHANNEL_ACCESS_TOKEN}`
                 }
             }

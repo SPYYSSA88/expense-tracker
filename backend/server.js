@@ -24,6 +24,61 @@ const lineConfig = {
 // Create LINE SDK Client
 const client = new line.Client(lineConfig);
 
+// ===========================================
+// Rich Menu Switching Functions
+// ===========================================
+import fs from 'fs';
+
+// Load Rich Menu IDs from saved file
+const loadRichMenuIds = () => {
+    try {
+        const filePath = './richMenuIds.json';
+        if (fs.existsSync(filePath)) {
+            const data = fs.readFileSync(filePath, 'utf8');
+            return JSON.parse(data);
+        }
+    } catch (error) {
+        console.error('Error loading Rich Menu IDs:', error);
+    }
+    return null;
+};
+
+// Switch user's Rich Menu to Home Menu (after login)
+const switchToHomeMenu = async (userId) => {
+    try {
+        const menuIds = loadRichMenuIds();
+        if (!menuIds || !menuIds.homeMenuId) {
+            console.log('Home Menu ID not found, skipping switch');
+            return false;
+        }
+
+        await client.linkRichMenuToUser(userId, menuIds.homeMenuId);
+        console.log(`✅ Switched Rich Menu to Home for user: ${userId}`);
+        return true;
+    } catch (error) {
+        console.error('Error switching Rich Menu:', error);
+        return false;
+    }
+};
+
+// Switch user's Rich Menu to Login Menu (for new users)
+const switchToLoginMenu = async (userId) => {
+    try {
+        const menuIds = loadRichMenuIds();
+        if (!menuIds || !menuIds.loginMenuId) {
+            console.log('Login Menu ID not found, skipping switch');
+            return false;
+        }
+
+        await client.linkRichMenuToUser(userId, menuIds.loginMenuId);
+        console.log(`✅ Switched Rich Menu to Login for user: ${userId}`);
+        return true;
+    } catch (error) {
+        console.error('Error switching Rich Menu:', error);
+        return false;
+    }
+};
+
 // Webhook Route (MUST be before express.json)
 app.post('/webhook', line.middleware(lineConfig), async (req, res) => {
     try {
@@ -382,6 +437,11 @@ app.post('/api/auth/login', async (req, res) => {
 
         // ดึงข้อมูล group
         await user.populate('currentGroupId');
+
+        // สลับ Rich Menu เป็น Home Menu หลัง Login สำเร็จ
+        switchToHomeMenu(lineUserId).catch(err =>
+            console.error('Failed to switch Rich Menu:', err)
+        );
 
         res.json({
             success: true,
