@@ -262,33 +262,35 @@ const handleEvent = async (event) => {
                 contents: {
                     type: 'bubble',
                     size: 'mega',
-                    header: {
-                        type: 'box',
-                        layout: 'vertical',
-                        contents: [
-                            {
-                                type: 'text',
-                                text: `📊 สรุปเดือน ${thaiMonth} ${thaiYear}`,
-                                weight: 'bold',
-                                size: 'lg',
-                                color: '#FFFFFF',
-                                align: 'center'
-                            }
-                        ],
-                        backgroundColor: '#C9A962',
-                        paddingAll: '15px'
-                    },
                     hero: {
                         type: 'image',
                         url: headerImage,
                         size: 'full',
-                        aspectRatio: '20:10',
+                        aspectRatio: '20:13',
                         aspectMode: 'cover'
                     },
                     body: {
                         type: 'box',
                         layout: 'vertical',
                         contents: [
+                            {
+                                type: 'text',
+                                text: `📊 สรุปเดือน ${thaiMonth}`,
+                                weight: 'bold',
+                                size: 'xl',
+                                color: '#C9A962'
+                            },
+                            {
+                                type: 'text',
+                                text: `พ.ศ. ${thaiYear}`,
+                                size: 'sm',
+                                color: '#888888',
+                                margin: 'sm'
+                            },
+                            {
+                                type: 'separator',
+                                margin: 'lg'
+                            },
                             {
                                 type: 'box',
                                 layout: 'vertical',
@@ -334,7 +336,8 @@ const handleEvent = async (event) => {
                                     { type: 'text', text: `📝 รายการทั้งหมด: ${transactionCount} รายการ`, size: 'xs', color: '#888888' }
                                 ]
                             }
-                        ]
+                        ],
+                        paddingAll: '20px'
                     },
                     footer: {
                         type: 'box',
