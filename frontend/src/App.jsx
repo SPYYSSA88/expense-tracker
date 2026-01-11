@@ -1303,11 +1303,20 @@ export default function App({ liffProfile, liff, liffError }) {
         if (!lineUserId) return;
         setIsDataLoading(true);
         try {
+            const monthStr = getMonthString(selectedMonth);
+            console.log('🔍 Fetching data for month:', monthStr, 'userId:', lineUserId);
+
             const [txRes, catRes, reportRes] = await Promise.all([
-                api.get('/transactions', { params: { month: getMonthString(selectedMonth) } }),
+                api.get('/transactions', { params: { month: monthStr } }),
                 api.get('/categories'),
-                api.get('/report', { params: { month: getMonthString(selectedMonth) } })
+                api.get('/report', { params: { month: monthStr } })
             ]);
+
+            console.log('📊 Raw API responses:', {
+                transactions: txRes.data,
+                categories: catRes.data,
+                report: reportRes.data
+            });
 
             // Extract data correctly from API response structure
             // API returns: { success: true, data: { transactions: [...], ... } }
@@ -1315,14 +1324,22 @@ export default function App({ liffProfile, liff, liffError }) {
             const catData = catRes.data?.data?.categories || catRes.data?.categories || catRes.data?.data || [];
             const reportData = reportRes.data?.data || reportRes.data || null;
 
-            console.log('Fetched transactions:', txData.length, 'items');
-            console.log('Fetched categories:', catData.length, 'items');
+            console.log('✅ Extracted data:', {
+                transactions: txData.length,
+                categories: catData.length,
+                report: reportData?.summary
+            });
 
             setTransactions(txData);
             setCategories(catData);
             setReport(reportData);
         } catch (error) {
-            console.error('Fetch error:', error);
+            console.error('❌ Fetch error:', error);
+            console.error('Error details:', {
+                message: error.message,
+                response: error.response?.data,
+                status: error.response?.status
+            });
         } finally {
             setIsDataLoading(false);
         }
