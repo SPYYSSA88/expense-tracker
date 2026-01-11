@@ -18,7 +18,7 @@ const LIFF_ID = import.meta.env.VITE_LIFF_ID || '';
 
 const api = axios.create({
     baseURL: API_URL,
-    timeout: 5000
+    timeout: 2500
 });
 
 // Chart Colors
