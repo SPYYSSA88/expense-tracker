@@ -1166,12 +1166,13 @@ const BottomSheetQuickAdd = ({ isOpen, onClose, categories, onSubmit }) => {
 // ===========================================
 // Main App Component
 // ===========================================
-export default function App() {
+export default function App({ liffProfile, liff, liffError }) {
     // Auth State
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [user, setUser] = useState(null);
     const [lineUserId, setLineUserId] = useState(null);
+    const [authError, setAuthError] = useState(liffError || null);
 
     // Navigation - Persist tab in localStorage
     const [activeTab, setActiveTab] = useState(() => {
@@ -1249,42 +1250,51 @@ export default function App() {
     const showError = useCallback((title, msg) => showToast('error', title, msg), [showToast]);
 
     // ===========================================
-    // Initialize LIFF
+    // Initialize Auth from LIFF Profile (passed from main.jsx)
     // ===========================================
     useEffect(() => {
-        const initLiff = async () => {
+        const initAuth = async () => {
             try {
-                if (LIFF_ID) {
-                    await liff.init({ liffId: LIFF_ID });
-                    if (liff.isLoggedIn()) {
-                        const profile = await liff.getProfile();
-                        setUser(profile);
-                        setLineUserId(profile.userId);
-                        api.defaults.headers.common['x-line-user-id'] = profile.userId;
-                        setIsLoggedIn(true);
+                // If liffProfile is passed from main.jsx, use it
+                if (liffProfile && liffProfile.userId) {
+                    console.log('Using LIFF profile from main.jsx:', liffProfile.displayName);
+                    setUser(liffProfile);
+                    setLineUserId(liffProfile.userId);
+                    api.defaults.headers.common['x-line-user-id'] = liffProfile.userId;
+                    setIsLoggedIn(true);
+
+                    // Call login API to ensure user exists in database
+                    try {
+                        await api.post('/auth/login', {
+                            lineUserId: liffProfile.userId,
+                            displayName: liffProfile.displayName,
+                            pictureUrl: liffProfile.pictureUrl
+                        });
+                        console.log('User synced with backend');
+                    } catch (err) {
+                        console.error('Failed to sync user with backend:', err);
                     }
-                } else {
-                    // Dev mode
+                } else if (!LIFF_ID) {
+                    // Dev mode - no LIFF ID configured
+                    console.log('Dev mode: No LIFF_ID configured');
                     const devUserId = 'dev_user_001';
                     setLineUserId(devUserId);
                     api.defaults.headers.common['x-line-user-id'] = devUserId;
-                    setUser({ displayName: 'Dev User', pictureUrl: null });
+                    setUser({ displayName: 'Dev User', pictureUrl: null, userId: devUserId });
                     setIsLoggedIn(true);
+                } else {
+                    // LIFF_ID is set but no profile - waiting for main.jsx to pass it
+                    console.log('Waiting for LIFF profile from main.jsx...');
                 }
             } catch (error) {
-                console.error('LIFF init error:', error);
-                // Fallback to dev mode
-                const devUserId = 'dev_user_001';
-                setLineUserId(devUserId);
-                api.defaults.headers.common['x-line-user-id'] = devUserId;
-                setUser({ displayName: 'Dev User', pictureUrl: null });
-                setIsLoggedIn(true);
+                console.error('Auth init error:', error);
+                setAuthError(error.message);
             } finally {
                 setIsLoading(false);
             }
         };
-        initLiff();
-    }, []);
+        initAuth();
+    }, [liffProfile]);
 
     // ===========================================
     // Data Fetching
