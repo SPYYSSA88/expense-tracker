@@ -38,6 +38,9 @@ if (!LIFF_ID) {
                 await liff.init({ liffId: LIFF_ID });
                 console.log('LIFF initialized successfully');
 
+                // Make liff globally available for shareToLine and other features
+                window.liff = liff;
+
                 if (!liff.isLoggedIn()) {
                     console.log('User not logged in, redirecting to LINE login...');
                     liff.login();

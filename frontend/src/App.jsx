@@ -18,7 +18,7 @@ const LIFF_ID = import.meta.env.VITE_LIFF_ID || '';
 
 const api = axios.create({
     baseURL: API_URL,
-    timeout: 2500
+    timeout: 10000
 });
 
 // Chart Colors
@@ -767,6 +767,12 @@ const formatCurrencyWithCode = (amount, currencyCode = 'THB') => {
     }).format(convertedAmount);
 };
 
+// Helper function to get currency symbol from localStorage (for components without prop access)
+const getCurrencySymbol = () => {
+    const code = localStorage.getItem('selected_currency') || 'THB';
+    return CURRENCIES.find(c => c.code === code)?.symbol || '฿';
+};
+
 // ===========================================
 // LINE CHAT SIMULATOR
 // ===========================================
@@ -838,10 +844,10 @@ const ChatSimulator = ({ user }) => {
             return (
                 <div className="chat-flex-card">
                     <div className="chat-flex-title">{d.title}</div>
-                    {d.income && <div>💰 รายรับ: ฿{d.income}</div>}
-                    {d.expense && <div>💸 รายจ่าย: ฿{d.expense}</div>}
-                    {d.balance && <div>📊 คงเหลือ: ฿{d.balance}</div>}
-                    {d.icon && <div>{d.icon} {d.name}: ฿{d.amount}</div>}
+                    {d.income && <div>💰 รายรับ: {getCurrencySymbol()}{d.income}</div>}
+                    {d.expense && <div>💸 รายจ่าย: {getCurrencySymbol()}{d.expense}</div>}
+                    {d.balance && <div>📊 คงเหลือ: {getCurrencySymbol()}{d.balance}</div>}
+                    {d.icon && <div>{d.icon} {d.name}: {getCurrencySymbol()}{d.amount}</div>}
                 </div>
             );
         }
@@ -1015,7 +1021,7 @@ const BottomSheetQuickAdd = ({ isOpen, onClose, categories, onSubmit }) => {
 
                         {/* Amount Display */}
                         <div className="amount-display">
-                            <span className="currency">฿</span>
+                            <span className="currency">{getCurrencySymbol()}</span>
                             <input
                                 type="number"
                                 value={amount}
@@ -1597,6 +1603,7 @@ export default function App({ liffProfile, liff, liffError }) {
                                     t={t}
                                     language={language}
                                     isLoading={isDataLoading}
+                                    selectedCurrency={selectedCurrency}
                                 />
                             </motion.div>
                         )}
@@ -1673,6 +1680,8 @@ export default function App({ liffProfile, liff, liffError }) {
                                     t={t}
                                     language={language}
                                     setLanguage={setLanguage}
+                                    selectedCurrency={selectedCurrency}
+                                    onCurrencyChange={updateCurrency}
                                 />
                             </motion.div>
                         )}
@@ -1780,10 +1789,13 @@ export default function App({ liffProfile, liff, liffError }) {
 // ===========================================
 // HOME VIEW - Statement Style
 // ===========================================
-function HomeView({ summary, transactions, selectedMonth, onMonthChange, setSelectedMonth, t, language, isLoading }) {
+function HomeView({ summary, transactions, selectedMonth, onMonthChange, setSelectedMonth, t, language, isLoading, selectedCurrency }) {
     const [viewType, setViewType] = useState('all'); // all, income, expense
     const [showMonthPicker, setShowMonthPicker] = useState(false);
     const [pickerYear, setPickerYear] = useState(selectedMonth.getFullYear());
+
+    // Get currency symbol from CURRENCIES array
+    const currencySymbol = CURRENCIES.find(c => c.code === selectedCurrency)?.symbol || '฿';
 
     const getLocale = () => {
         if (language === 'zh') return 'zh-CN';
@@ -1838,7 +1850,7 @@ function HomeView({ summary, transactions, selectedMonth, onMonthChange, setSele
             <div className="card card-gold balance-card" style={{ marginBottom: '16px' }}>
                 <p className="balance-label">{t('totalBalance')}</p>
                 <p className="balance-amount">
-                    <span className="balance-currency">฿</span>
+                    <span className="balance-currency">{currencySymbol}</span>
                     <AnimatedNumber value={summary.balance} duration={1200} />
                 </p>
             </div>
@@ -1848,12 +1860,12 @@ function HomeView({ summary, transactions, selectedMonth, onMonthChange, setSele
                 <div className="stat-card">
                     <div className="stat-icon">💰</div>
                     <p className="stat-label">{t('income')}</p>
-                    <p className="stat-amount stat-income">+฿<AnimatedNumber value={summary.income} duration={1000} /></p>
+                    <p className="stat-amount stat-income">+{currencySymbol}<AnimatedNumber value={summary.income} duration={1000} /></p>
                 </div>
                 <div className="stat-card">
                     <div className="stat-icon">💸</div>
                     <p className="stat-label">{t('expense')}</p>
-                    <p className="stat-amount stat-expense">-฿<AnimatedNumber value={summary.expense} duration={1000} /></p>
+                    <p className="stat-amount stat-expense">-{currencySymbol}<AnimatedNumber value={summary.expense} duration={1000} /></p>
                 </div>
             </div>
 
@@ -2497,7 +2509,7 @@ function DailyView({ transactions, selectedDate, onDateChange, onDelete, onAdd, 
                                     <div className="progress-details" style={{ flex: 1 }}>
                                         <div className="progress-header" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', fontSize: '0.85rem' }}>
                                             <span style={{ fontWeight: 500 }}>{cat.name}</span>
-                                            <span style={{ fontWeight: 600 }}>฿{formatCurrency(cat.amount)}</span>
+                                            <span style={{ fontWeight: 600 }}>{getCurrencySymbol()}{formatCurrency(cat.amount)}</span>
                                         </div>
                                         <div className="progress-bar" style={{ height: '6px', background: '#f0f0f0', borderRadius: '3px', overflow: 'hidden' }}>
                                             <div
@@ -2577,7 +2589,7 @@ function DailyView({ transactions, selectedDate, onDateChange, onDelete, onAdd, 
                                         color: tx.type === 'income' ? '#2E7D32' : '#C62828',
                                         fontSize: '0.95rem'
                                     }}>
-                                        {tx.type === 'income' ? '+' : '-'}฿{formatCurrency(tx.amount)}
+                                        {tx.type === 'income' ? '+' : '-'}{getCurrencySymbol()}{formatCurrency(tx.amount)}
                                     </div>
                                 </div>
                                 <button
@@ -2802,7 +2814,7 @@ function ReportView({ report, selectedMonth, onMonthChange, t, transactions = []
                                 layout: 'horizontal',
                                 contents: [
                                     { type: 'text', text: '💰 รายรับ', flex: 1 },
-                                    { type: 'text', text: `฿${formatCurrency(summary.income)}`, align: 'end', color: '#00C851', weight: 'bold' }
+                                    { type: 'text', text: `${getCurrencySymbol()}${formatCurrency(summary.income)}`, align: 'end', color: '#00C851', weight: 'bold' }
                                 ]
                             },
                             {
@@ -2810,7 +2822,7 @@ function ReportView({ report, selectedMonth, onMonthChange, t, transactions = []
                                 layout: 'horizontal',
                                 contents: [
                                     { type: 'text', text: '💸 รายจ่าย', flex: 1 },
-                                    { type: 'text', text: `฿${formatCurrency(summary.expense)}`, align: 'end', color: '#FF4444', weight: 'bold' }
+                                    { type: 'text', text: `${getCurrencySymbol()}${formatCurrency(summary.expense)}`, align: 'end', color: '#FF4444', weight: 'bold' }
                                 ],
                                 margin: 'md'
                             },
@@ -2820,7 +2832,7 @@ function ReportView({ report, selectedMonth, onMonthChange, t, transactions = []
                                 layout: 'horizontal',
                                 contents: [
                                     { type: 'text', text: summary.balance >= 0 ? '✅ คงเหลือ' : '❌ ขาดทุน', flex: 1, weight: 'bold' },
-                                    { type: 'text', text: `฿${formatCurrency(Math.abs(summary.balance))}`, align: 'end', color: balanceColor, weight: 'bold', size: 'lg' }
+                                    { type: 'text', text: `${getCurrencySymbol()}${formatCurrency(Math.abs(summary.balance))}`, align: 'end', color: balanceColor, weight: 'bold', size: 'lg' }
                                 ],
                                 margin: 'lg'
                             }
@@ -2936,10 +2948,10 @@ function ReportView({ report, selectedMonth, onMonthChange, t, transactions = []
 
             {/* KPI Cards Grid */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', marginBottom: '20px' }}>
-                <KPICard icon="💰" label={t('income')} value={`฿${formatCurrency(summary.income)}`} color="#22C55E" bgColor="#F0FDF4" />
-                <KPICard icon="💸" label={t('expense')} value={`฿${formatCurrency(summary.expense)}`} color="#EF4444" bgColor="#FEF2F2" />
-                <KPICard icon="📊" label={t('balance')} value={`฿${formatCurrency(summary.balance)}`} color={summary.balance >= 0 ? '#3B82F6' : '#EF4444'} bgColor="#EFF6FF" />
-                <KPICard icon="🔔" label={t('recurringItems')} value={`฿${formatCurrency(totalRecurring)}`} color="#F59E0B" bgColor="#FFFBEB" />
+                <KPICard icon="💰" label={t('income')} value={`${getCurrencySymbol()}${formatCurrency(summary.income)}`} color="#22C55E" bgColor="#F0FDF4" />
+                <KPICard icon="💸" label={t('expense')} value={`${getCurrencySymbol()}${formatCurrency(summary.expense)}`} color="#EF4444" bgColor="#FEF2F2" />
+                <KPICard icon="📊" label={t('balance')} value={`${getCurrencySymbol()}${formatCurrency(summary.balance)}`} color={summary.balance >= 0 ? '#3B82F6' : '#EF4444'} bgColor="#EFF6FF" />
+                <KPICard icon="🔔" label={t('recurringItems')} value={`${getCurrencySymbol()}${formatCurrency(totalRecurring)}`} color="#F59E0B" bgColor="#FFFBEB" />
             </div>
 
             {/* Interactive Line Chart */}
@@ -2964,7 +2976,7 @@ function ReportView({ report, selectedMonth, onMonthChange, t, transactions = []
                         <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 10 }} />
                         <Tooltip
                             contentStyle={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: '8px', fontSize: '12px' }}
-                            formatter={(value) => [`฿${formatCurrency(value)}`, '']}
+                            formatter={(value) => [`${getCurrencySymbol()}${formatCurrency(value)}`, '']}
                         />
                         <Area type="monotone" dataKey="income" stroke="#22C55E" fill="url(#colorIncome)" strokeWidth={2} name={t('income')} />
                         <Area type="monotone" dataKey="expense" stroke="#EF4444" fill="url(#colorExpense)" strokeWidth={2} name={t('expense')} />
@@ -3015,7 +3027,7 @@ function ReportView({ report, selectedMonth, onMonthChange, t, transactions = []
                                         </div>
                                     </td>
                                     <td style={{ padding: '12px 8px', textAlign: 'right', fontWeight: 600, color: tx.type === 'income' ? '#22C55E' : '#EF4444' }}>
-                                        {tx.type === 'income' ? '+' : '-'}฿{formatCurrency(tx.amount)}
+                                        {tx.type === 'income' ? '+' : '-'}{getCurrencySymbol()}{formatCurrency(tx.amount)}
                                     </td>
                                     <td style={{ padding: '12px 8px', textAlign: 'center' }}>
                                         <span style={{
@@ -3083,14 +3095,14 @@ function ReportView({ report, selectedMonth, onMonthChange, t, transactions = []
                     <div style={{ flex: 1, padding: '12px', background: '#F3F4F6', borderRadius: '12px', textAlign: 'center' }}>
                         <div style={{ fontSize: '0.8rem', color: '#6B7280', marginBottom: '4px' }}>เดือนก่อน</div>
                         <div style={{ fontSize: '1.2rem', fontWeight: 700, color: '#374151' }}>
-                            ฿{formatCurrency(trendComparisonData.previous)}
+                            {getCurrencySymbol()}{formatCurrency(trendComparisonData.previous)}
                         </div>
                     </div>
                     {/* Current Month */}
                     <div style={{ flex: 1, padding: '12px', background: trendComparisonData.isIncrease ? '#FEF2F2' : '#F0FDF4', borderRadius: '12px', textAlign: 'center' }}>
                         <div style={{ fontSize: '0.8rem', color: '#6B7280', marginBottom: '4px' }}>เดือนนี้</div>
                         <div style={{ fontSize: '1.2rem', fontWeight: 700, color: trendComparisonData.isIncrease ? '#EF4444' : '#22C55E' }}>
-                            ฿{formatCurrency(trendComparisonData.current)}
+                            {getCurrencySymbol()}{formatCurrency(trendComparisonData.current)}
                         </div>
                     </div>
                 </div>
@@ -3103,7 +3115,7 @@ function ReportView({ report, selectedMonth, onMonthChange, t, transactions = []
                     ]} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                         <XAxis type="number" hide />
                         <YAxis type="category" dataKey="name" tick={{ fontSize: 12 }} width={70} />
-                        <Tooltip formatter={(value) => [`฿${formatCurrency(value)}`, 'รายจ่าย']} />
+                        <Tooltip formatter={(value) => [`${getCurrencySymbol()}${formatCurrency(value)}`, 'รายจ่าย']} />
                         <Bar dataKey="amount" radius={[0, 8, 8, 0]}>
                             <Cell fill="#9CA3AF" />
                             <Cell fill={trendComparisonData.isIncrease ? '#EF4444' : '#22C55E'} />
@@ -3202,7 +3214,7 @@ function ReportView({ report, selectedMonth, onMonthChange, t, transactions = []
                                     <div style={{ fontSize: '0.8rem', color: '#9CA3AF' }}>{t('date')} {item.dueDate}</div>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <span style={{ fontWeight: 700, color: '#B45309' }}>฿{formatCurrency(item.amount)}</span>
+                                    <span style={{ fontWeight: 700, color: '#B45309' }}>{getCurrencySymbol()}{formatCurrency(item.amount)}</span>
                                     <button onClick={() => handleEditRecurring(item)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem' }}>✏️</button>
                                     <button onClick={() => handleDeleteRecurring(item.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem' }}>🗑️</button>
                                 </div>
@@ -3348,7 +3360,7 @@ function CategoryView({ categories, onAdd, onDelete, t }) {
 // ===========================================
 // PROFILE VIEW
 // ===========================================
-function ProfileView({ user, onLogout, t, language, setLanguage }) {
+function ProfileView({ user, onLogout, t, language, setLanguage, selectedCurrency, onCurrencyChange }) {
     // All Themes Definition
     const THEMES = [
         { id: 'gold', name: 'Luxury Gold', icon: '🏆', colors: ['#C9A962', '#D4B978', '#F7F5F3'] },
@@ -3371,7 +3383,7 @@ function ProfileView({ user, onLogout, t, language, setLanguage }) {
     const [showNumberPicker, setShowNumberPicker] = useState(false);
     const [showThemePicker, setShowThemePicker] = useState(false);
     const [theme, setTheme] = useState('gold');
-    const [currency, setCurrency] = useState('THB');
+    // currency state is now passed from App via props (selectedCurrency, onCurrencyChange)
     const [dateFormat, setDateFormat] = useState('DD/MM/YYYY');
     const [numberFormat, setNumberFormat] = useState('1,000.00');
     const [lineMenuVisible, setLineMenuVisible] = useState(true);
@@ -3479,7 +3491,7 @@ function ProfileView({ user, onLogout, t, language, setLanguage }) {
     ];
 
     const currentLang = LANGUAGES.find(l => l.code === language) || LANGUAGES[0];
-    const currentCurrency = CURRENCIES.find(c => c.code === currency) || CURRENCIES[0];
+    const currentCurrency = CURRENCIES.find(c => c.code === selectedCurrency) || CURRENCIES[0];
 
     return (
         <div style={{ paddingBottom: '20px' }}>
@@ -3731,7 +3743,7 @@ function ProfileView({ user, onLogout, t, language, setLanguage }) {
                     {CURRENCIES.map((curr) => (
                         <div
                             key={curr.code}
-                            onClick={() => { setCurrency(curr.code); setShowCurrencyPicker(false); }}
+                            onClick={() => { onCurrencyChange(curr.code); setShowCurrencyPicker(false); }}
                             style={{
                                 padding: '12px 16px',
                                 background: 'white',
@@ -3740,13 +3752,13 @@ function ProfileView({ user, onLogout, t, language, setLanguage }) {
                                 alignItems: 'center',
                                 gap: '12px',
                                 cursor: 'pointer',
-                                color: currency === curr.code ? '#C9A962' : 'inherit',
-                                fontWeight: currency === curr.code ? 600 : 400
+                                color: selectedCurrency === curr.code ? '#C9A962' : 'inherit',
+                                fontWeight: selectedCurrency === curr.code ? 600 : 400
                             }}
                         >
                             <span style={{ fontSize: '1.2rem' }}>{curr.symbol}</span>
                             <span>{curr.name}</span>
-                            {currency === curr.code && <span style={{ marginLeft: 'auto' }}>✓</span>}
+                            {selectedCurrency === curr.code && <span style={{ marginLeft: 'auto' }}>✓</span>}
                         </div>
                     ))}
                 </div>
@@ -3870,7 +3882,7 @@ function ProfileView({ user, onLogout, t, language, setLanguage }) {
                 </div>
                 <div className="setting-content">
                     <div className="setting-title">{t('recurringItems')}</div>
-                    <div className="setting-subtitle">{recurringTransactions.length} {t('items')} • ฿{recurringTransactions.reduce((a, b) => a + b.amount, 0).toLocaleString()}{t('perMonth')}</div>
+                    <div className="setting-subtitle">{recurringTransactions.length} {t('items')} • {getCurrencySymbol()}{recurringTransactions.reduce((a, b) => a + b.amount, 0).toLocaleString()}{t('perMonth')}</div>
                 </div>
                 <div className="setting-arrow" style={{ transform: showRecurring ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }}>›</div>
             </div>
@@ -3891,7 +3903,7 @@ function ProfileView({ user, onLogout, t, language, setLanguage }) {
                                 <div style={{ fontWeight: 500 }}>{item.name}</div>
                                 <div style={{ fontSize: '0.75rem', color: '#888' }}>{item.frequency} • ถัดไป: {item.nextDate}</div>
                             </div>
-                            <div style={{ fontWeight: 600, color: '#FF6B00' }}>฿{item.amount.toLocaleString()}</div>
+                            <div style={{ fontWeight: 600, color: '#FF6B00' }}>{getCurrencySymbol()}{item.amount.toLocaleString()}</div>
                             <div style={{ display: 'flex', gap: '8px' }}>
                                 <button
                                     onClick={(e) => { e.stopPropagation(); handleEditRecurring(item); }}
@@ -4095,7 +4107,7 @@ function AddTransactionModal({ categories, onSubmit, onClose }) {
 
                 {/* Amount */}
                 <div className="card text-center mb-md">
-                    <p className="stat-label">Amount (฿)</p>
+                    <p className="stat-label">Amount ({getCurrencySymbol()})</p>
                     <input
                         type="number"
                         className="input-amount"
@@ -4254,9 +4266,9 @@ function AddTransactionModal({ categories, onSubmit, onClose }) {
                         }}>
                             <div style={{ fontSize: '0.8rem', color: '#888' }}>ส่วนที่คุณต้องจ่าย</div>
                             <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#C9A962' }}>
-                                ฿{amount ? (parseFloat(amount) / splitCount).toFixed(2) : '0.00'}
+                                {getCurrencySymbol()}{amount ? (parseFloat(amount) / splitCount).toFixed(2) : '0.00'}
                             </div>
-                            <div style={{ fontSize: '0.75rem', color: '#888' }}>จาก ฿{amount || '0'} ÷ {splitCount} คน</div>
+                            <div style={{ fontSize: '0.75rem', color: '#888' }}>จาก {getCurrencySymbol()}{amount || '0'} ÷ {splitCount} คน</div>
                         </div>
                     </div>
                 )}
